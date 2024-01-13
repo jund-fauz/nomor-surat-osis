@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aplikasi Nomor Surat OSIS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="title position-relative">
+    <h1 class="position-absolute top-50 start-50 translate-middle">Aplikasi Nomor Surat OSIS</h1>
+    <button type="button" class="btn btn-primary position-absolute top-50 end-0 translate-middle-y" data-bs-toggle="modal" data-bs-target="#create-new-dialog">Buat Surat Baru</button>
+  </div>
+  <table class="table table-striped table-hover" id="nomor-surat">
+    <thead>
+      <tr>
+        <th scope="col">No</th>
+        <th scope="col">Tanggal</th>
+        <th scope="col">Pengirim</th>
+        <th scope="col">Jenis Surat</th>
+        <th scope="col">Nomor Surat</th>
+        <th scope="col">Perihal</th>
+        <th scope="col">Link</th>
+      </tr>
+    </thead>
+    <tbody id="table-content">
+    </tbody>
+  </table>
+  <div class="modal fade" id="create-new-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="create-new-letter">Buat Surat Baru</h5>
+        </div>
+        <div class="modal-body">
+          <div class="container" id="create-new-content">
+            <div class="d-flex gap-3">
+              <div class="form-floating w-50">
+                <select class="form-select" id="pengirim" aria-label="Floating label select example">
+                  <option>Ketua OSIS</option>
+                  <option selected>Sekretaris</option>
+                  <option>Bendahara</option>
+                  <option>DHPK</option>
+                  <option>S-BAS</option>
+                  <option>WasBang</option>
+                  <option>IMTAQ</option>
+                  <option>Tatib</option>
+                  <option>TIK</option>
+                  <option>K3</option>
+                  <option>Orkes</option>
+                </select>
+                <label for="pengirim">Pengirim</label>
+              </div>
+              <div class="form-floating w-50">
+                <select class="form-select" id="jenis-surat" aria-label="Floating label select example">
+                  <option value="1">Surat Rekomendasi</option>
+                  <option value="2">Surat Permohonan</option>
+                  <option value="3">Surat Keputusan</option>
+                  <option value="4">Surat Keterangan</option>
+                  <option value="5">Surat Edaran</option>
+                  <option value="6">Berita Acara</option>
+                  <option value="7">Surat Undangan</option>
+                  <option value="8">Surat Perjanjian/Kerjasama</option>
+                  <option value="9">Laporan</option>
+                  <option value="10">Surat Tugas/Kuasa/Surat Jalan</option>
+                  <option value="11">Surat Perjanjian Kerja</option>
+                  <option value="12">Surat Perizinan</option>
+                </select>
+                <label for="jenis-surat">Jenis Surat</label>
+              </div>
+            </div>
+            <div class="mt-2" id="perihal-container">
+              <label for="perihal" class="form-label">Perihal</label>
+              <textarea type="text" class="form-control" id="perihal" placeholder="Perihal"
+                autocomplete="username" rows="2"></textarea>
+            </div>
+            <div class="mt-2 mb-3" id="link-container">
+              <label for="link" class="form-label">Link</label>
+              <input class="form-control" id="link" placeholder="Link" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="create-new">Buat</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script type="module" src="app.js"></script>
+</body>
+
+</html>
