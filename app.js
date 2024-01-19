@@ -5,6 +5,7 @@ import toRoman from './data/roman-numerals.js'
 import linkButton from './views/open-link.js'
 import jenisSurat from "./data/jenis-surat.js"
 import toDecimal from './data/to-decimal.js'
+import jenisSuratKepanjangan from './data/jenis-surat-kepanjangan.js'
 
 const mainUrl = 'https://aplikasi-nomor-surat-osis.vercel.app'
 
@@ -69,7 +70,7 @@ jQuery(function ($) {
         data[0].payload.forEach(data => {
             const { id, tanggal, bulan, tahun, pengirim, jenis_surat, perihal, link } = data
             const finalDate = `${tanggal == 0 ? '' : tanggal} ${monthName[bulan - 1]} ${tahun}`
-            $('#table-content').append(tableData(id, finalDate, pengirim, jenis_surat, nomorSurat(id, jenis_surat, pengirim, 'XIV', toRoman(bulan), tahun), perihal, linkButton(link, id)))
+            $('#table-content').append(tableData(id, finalDate, pengirim, jenisSuratKepanjangan[jenisSurat.indexOf(jenis_surat)], nomorSurat(id, jenis_surat, pengirim, 'XIV', toRoman(bulan), tahun), perihal, linkButton(link, id)))
         })
         if (!data[0].payload.length)
             $('#empty-table').append(`<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-new-dialog">Masukkan Data Yang Sudah Ada</button>`)
@@ -132,7 +133,7 @@ jQuery(function ($) {
                 const date = new Date()
                 const finalDate = `${date.getDate()} ${monthName[date.getMonth()]} ${date.getFullYear()}`
                 const id = response[0].payload.id
-                $('#table-content').append(tableData(id, finalDate, pengirim, jenisSurat[jenis - 1], nomorSurat(response[0].payload.id, jenisSurat[jenis - 1], pengirim, 'XIV', toRoman(date.getMonth() + 1), date.getFullYear()), perihal, linkButton(link, id)))
+                $('#table-content').append(tableData(id, finalDate, pengirim, jenisSuratKepanjangan[jenis - 1], nomorSurat(response[0].payload.id, jenisSurat[jenis - 1], pengirim, 'XIV', toRoman(date.getMonth() + 1), date.getFullYear()), perihal, linkButton(link, id)))
                 $('#create-new-dialog').modal('hide')
             }).catch(error => console.log(error))
         }
@@ -211,6 +212,7 @@ jQuery(function ($) {
             datas.every(data => {
                 let jenisSurat, bulan, tahun, perihal
                 const message = 'Masukkan data dengan benar!'
+                console.log('oy')
                 if ((data.match(new RegExp("/", "g")) || []).length != 5 || !data.includes('(') || !data.includes(')')) {
                     showError(message)
                     error = true
@@ -240,8 +242,8 @@ jQuery(function ($) {
                         }
                     })
                     if (error) return false
-                    let dataPerihal = data.slice(data.indexOf('(') + 1)
-                    perihal = dataPerihal.replace(')', '')
+                    let dataPerihal = data.slice(data.indexOf('(') + 1, -1)
+                    perihal = dataPerihal
                     fetch(`${mainUrl}/nomor-surat`, {
                         method: 'POST',
                         headers: {
@@ -256,7 +258,7 @@ jQuery(function ($) {
                             withDate: false
                         })
                     })
-                    if (dataNumber == lastIndex) location.reload()
+                    // if (dataNumber == lastIndex) location.reload()
                     dataNumber++
                     return true
                 }
