@@ -11,11 +11,14 @@
 </head>
 
 <body>
-  <div class="title position-relative">
+  <div class="title sticky-top d-grid z-1">
     <h1 class="position-absolute top-50 start-50 translate-middle">Aplikasi Nomor Surat OSIS</h1>
-    <button type="button" class="btn btn-primary position-absolute top-50 end-0 translate-middle-y" data-bs-toggle="modal" data-bs-target="#create-new-dialog">Buat Surat Baru</button>
+    <button type="button" class="btn btn-danger position-absolute start-0 top-50 translate-middle-y"
+      data-bs-toggle="modal" data-bs-target="#delete-all-dialog">Hapus Semua</button>button>
+    <button type="button" class="btn btn-primary position-absolute top-50 end-0 translate-middle-y"
+      data-bs-toggle="modal" data-bs-target="#create-new-dialog">Buat Surat Baru</button>
   </div>
-  <table class="table table-striped table-hover" id="nomor-surat">
+  <table class="table table-striped table-hover z-0" id="nomor-surat">
     <thead>
       <tr>
         <th scope="col">No</th>
@@ -30,7 +33,35 @@
     <tbody id="table-content">
     </tbody>
   </table>
-  <div class="modal fade" id="create-new-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="w-100 d-flex justify-content-center" id="empty-table"></div>
+  <div class="modal fade" id="login-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+        </div>
+        <div class="modal-body">
+          <div class="container" id="login-content">
+            <div>
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" placeholder="Masukkan username"
+                autocomplete="username" />
+            </div>
+            <div class="mt-2">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Masukkan password" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="login">Login</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="create-new-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-keyboard="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -75,8 +106,8 @@
             </div>
             <div class="mt-2" id="perihal-container">
               <label for="perihal" class="form-label">Perihal</label>
-              <textarea type="text" class="form-control" id="perihal" placeholder="Perihal"
-                autocomplete="username" rows="2"></textarea>
+              <textarea type="text" class="form-control" id="perihal" placeholder="Perihal" autocomplete="username"
+                rows="2"></textarea>
             </div>
             <div class="mt-2 mb-3" id="link-container">
               <label for="link" class="form-label">Link</label>
@@ -89,12 +120,71 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="modal fade" id="create-link-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="create-new-link">Masukkan Link</h5>
+        </div>
+        <div class="modal-body">
+          <div class="container" id="create-link-content">
+            <div class="mb-3" id="link-2-container">
+              <input class="form-control" id="link-2" placeholder="Link" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="create-link">Masukkan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="delete-all-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-keyboard="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p class="modal-title" id="delete-all-title">Apakah kamu yakin ingin menghapus semua isi tabel?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="delete-all">Ya</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="input-new-dialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-keyboard="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="input-new-title">Masukkan data yang sudah ada</h5>
+        </div>
+        <div class="modal-body">
+          <div id="input-new-container">
+            <textarea class="form-control" id="input-new" rows="10" placeholder="Data"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="input-new-btn">Masukkan</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     crossorigin="anonymous"></script>
   <script type="module" src="app.js"></script>
+  <script>
+    function createLink(id) {
+      $('#create-link-dialog').modal('show')
+      localStorage.setItem('id', id)
+    }
+  </script>
 </body>
 
 </html>

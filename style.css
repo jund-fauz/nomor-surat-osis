@@ -10,6 +10,7 @@
     padding: 15px;
     box-shadow: 1px 4px 4px 0px rgba(0, 0, 0, 0.25);
     height: 70px;
+    background-color: white;
 }
 
 table {
@@ -25,7 +26,7 @@ th:first-child {
 }
 
 .title > button {
-    margin-right: 15px;
+    margin: 0 15px;
 }
 
 textarea {
