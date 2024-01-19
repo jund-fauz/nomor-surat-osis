@@ -6,7 +6,7 @@ import linkButton from './views/open-link.js'
 import jenisSurat from "./data/jenis-surat.js"
 import toDecimal from './data/to-decimal.js'
 
-const mainUrl = 'http://localhost:3000'
+const mainUrl = 'https://aplikasi-nomor-surat-osis.vercel.app'
 
 jQuery(function ($) {
     !document.cookie.startsWith('loggedIn=true') ? $('#login-dialog').modal('show') : ''
