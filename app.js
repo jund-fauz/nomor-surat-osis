@@ -208,12 +208,10 @@ jQuery(function ($) {
             showError('Kamu tidak memasukkan apapun.')
             error = true
         } else {
-            let dataNumber = 0
-            // let lastIndex = datas.length - 1
+            let dataNumber = 0, lastIndex = datas.length - 1
             datas.every(data => {
                 let jenisSurat, bulan, tahun, perihal
                 const message = 'Masukkan data dengan benar!'
-                console.log('oy')
                 if ((data.match(new RegExp("/", "g")) || []).length != 5 || !data.includes('(') || !data.includes(')')) {
                     showError(message)
                     error = true
@@ -245,23 +243,18 @@ jQuery(function ($) {
                     if (error) return false
                     let dataPerihal = data.slice(data.indexOf('(') + 1, -1)
                     perihal = dataPerihal
-                    setTimeout(() => {
-                        fetch(`${mainUrl}/nomor-surat`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                jenisSurat,
-                                perihal,
-                                link: '',
-                                bulan,
-                                tahun,
-                                withDate: false
-                            })
-                        })
-                    }, dataNumber * 100);
-                    // if (dataNumber == lastIndex) location.reload()
+                    const sendData = new XMLHttpRequest()
+                    sendData.open('POST', `${mainUrl}/nomor-surat`, false)
+                    sendData.setRequestHeader('Content-Type', 'application/json')
+                    sendData.send(JSON.stringify({
+                        jenisSurat,
+                        perihal,
+                        link: '',
+                        bulan,
+                        tahun,
+                        withDate: false
+                    }))
+                    if (dataNumber == lastIndex) location.reload()
                     dataNumber++
                     return true
                 }
