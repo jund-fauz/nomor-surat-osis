@@ -21,6 +21,10 @@ th:first-child {
     margin-left: 5px;
 }
 
+th:last-child, td:last-child {
+    width: 250px;
+}
+
 .title > h1 {
     width: fit-content;
 }

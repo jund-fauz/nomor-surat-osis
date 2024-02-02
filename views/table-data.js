@@ -1,11 +1,21 @@
-const tableData = (id, tanggal, pengirim, jenisSurat, nomorSurat, perihal, link) => `<tr>
+const tableData = (
+  id,
+  tanggal,
+  pengirim,
+  jenisSurat,
+  nomorSurat,
+  perihal,
+  link
+) => `<tr>
           <th scope="row">${id}</th>
           <td>${tanggal}</td>
           <td>${pengirim}</td>
           <td>${jenisSurat}</td>
-          <td id="nomor-surat-content">${nomorSurat}</td>
+          <td>${nomorSurat}</td>
           <td>${perihal}</td>
-          <td id="link-table-${id}">${link}</td>
-        </tr>`
+          <td class="d-flex justify-content-between" id="link-table-${id}">
+            ${link}
+          </td>
+        </tr>`;
 
 export default tableData
