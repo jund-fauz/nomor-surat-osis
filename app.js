@@ -176,32 +176,32 @@ jQuery(function ($) {
       )
       $(`#create-link-${id}`).click(() => localStorage.setItem('id', id))
       $(`#edit-${id}`).click(() => {
-        $('#date').val($(`tr:nth-child(${id}) > td:nth-child(2)`).text())
+        $('#date').val($(`#date-${id}`).text())
         $(
           `#jenis-surat-edit > option:nth-child(${
             jenisSuratKepanjangan.indexOf(
-              $(`tr:nth-child(${id}) > td:nth-child(4)`).text()
+              $(`#jenis-${id}`).text()
             ) + 1
           })`
         ).prop('selected', true)
         $('#perihal-edit').val(
-          $(`tr:nth-child(${id}) > td:nth-child(6)`).text()
+          $(`#perihal-${id}`).text()
         )
         if (
           $.contains(
-            $(`tr:nth-child(${id}) > td:last-child`).get(0),
+            $(`#link-${id}`).get(0),
             $('a').get(0)
           )
         )
           $('#link-edit').val(
-            $(`tr:nth-child(${id}) > td:nth-child(7) > a`).attr('href')
+            $(`#link-${id} > a`).attr('href')
           )
         localStorage.setItem('id', id)
       })
       $(`#delete-${id}`).click(() => {
         localStorage.setItem('id', id)
         $('#delete-nomor-surat-body').text(
-          $(`tr:nth-child(${id}) > td:nth-child(5)`).text()
+          $(`#nomor-${id}`).text()
         )
       })
     })

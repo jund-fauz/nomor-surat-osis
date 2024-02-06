@@ -8,12 +8,12 @@ const tableData = (
   link
 ) => `<tr>
           <th scope="row">${id}</th>
-          <td>${tanggal}</td>
-          <td>${pengirim}</td>
-          <td>${jenisSurat}</td>
-          <td>${nomorSurat}</td>
-          <td>${perihal}</td>
-          <td>
+          <td id="date-${id}">${tanggal}</td>
+          <td id="pengirim-${id}">${pengirim}</td>
+          <td id="jenis-${id}">${jenisSurat}</td>
+          <td id="nomor-${id}">${nomorSurat}</td>
+          <td id="perihal-${id}">${perihal}</td>
+          <td id="link-${id}">
             ${link}
           </td>
         </tr>`;
