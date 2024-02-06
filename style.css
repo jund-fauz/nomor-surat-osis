@@ -1,3 +1,7 @@
+.wfc {
+    width: fit-content;
+}
+
 #password {
     margin-bottom: 20px;
 }
@@ -35,4 +39,8 @@ th:last-child, td:last-child {
 
 textarea {
     resize: none;
+}
+
+#date-container > p {
+    color: gray;
 }

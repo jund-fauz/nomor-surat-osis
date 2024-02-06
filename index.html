@@ -13,6 +13,12 @@
 
 <body>
   <div class="title sticky-top d-grid z-1">
+    <div class="d-flex gap-2 align-items-center">
+      <input type="text" class="form-control wfc" id="search" placeholder="Cari sesuatu disini" autocomplete="off">
+      <button type="button" class="btn btn-primary" id="searchButton">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </div>
     <h1 class="position-absolute top-50 start-50 translate-middle">Aplikasi Nomor Surat OSIS</h1>
     <button type="button" class="btn btn-primary position-absolute top-50 end-0 translate-middle-y"
       data-bs-toggle="modal" data-bs-target="#create-new-dialog">Buat Surat Baru</button>
@@ -20,7 +26,7 @@
   <table class="table table-striped table-hover z-0 align-middle" id="nomor-surat">
     <thead>
       <tr>
-        <th scope="col">No</th>
+        <th scope="col">ID</th>
         <th scope="col">Tanggal</th>
         <th scope="col">Pengirim</th>
         <th scope="col">Jenis Surat</th>
@@ -186,6 +192,7 @@
             <div class="mb-3" id="date-container">
               <label for="date" class="form-label">Tanggal</label>
               <input class="form-control" id="date" placeholder="Tanggal" />
+              <p class="mt-1">Ket: Tulis 0 atau kosongkan pada tanggal untuk tidak menampilkan tanggal</p>
             </div>
             <div class="d-flex gap-3">
               <div class="form-floating w-50">
@@ -222,11 +229,11 @@
                 <label for="jenis-surat-edit">Jenis Surat</label>
               </div>
             </div>
-            <div class="mt-2" id="perihal-container">
+            <div class="mt-2" id="perihal-edit-container">
               <label for="perihal-edit" class="form-label">Perihal</label>
-              <textarea type="text" class="form-control" id="perihal-edit" placeholder="Perihal" rows="2"></textarea>
+              <textarea type="text" class="form-control" id="perihal-edit" placeholder="Perihal" rows="1"></textarea>
             </div>
-            <div class="mt-2 mb-3" id="link-container">
+            <div class="mt-2 mb-3" id="link-edit-container">
               <label for="link-edit" class="form-label">Link</label>
               <input class="form-control" id="link-edit" placeholder="Link" />
             </div>
@@ -244,20 +251,6 @@
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     crossorigin="anonymous"></script>
   <script type="module" src="app.js"></script>
-  <script>
-    function createLink(id) {
-      $('#create-link-dialog').modal('show')
-      localStorage.setItem('id', id)
-    }
-
-    function deleteData(id) {
-      $('#delete-dialog').modal('show')
-      localStorage.setItem('id', id)
-      $('#delete-nomor-surat-body').text(
-        $(`tr:nth-child(${id}) > td:nth-child(5)`).text()
-      )
-    }
-  </script>
 </body>
 
 </html>

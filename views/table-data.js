@@ -13,7 +13,7 @@ const tableData = (
           <td>${jenisSurat}</td>
           <td>${nomorSurat}</td>
           <td>${perihal}</td>
-          <td class="d-flex justify-content-between" id="link-table-${id}">
+          <td>
             ${link}
           </td>
         </tr>`;

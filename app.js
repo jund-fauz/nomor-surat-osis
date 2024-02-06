@@ -7,8 +7,8 @@ import jenisSurat from './data/jenis-surat.js'
 import toDecimal from './data/to-decimal.js'
 import jenisSuratKepanjangan from './data/jenis-surat-kepanjangan.js'
 
-const mainUrl = 'https://aplikasi-nomor-surat-osis.vercel.app'
-// const mainUrl = 'http://localhost:3000'
+// const mainUrl = 'https://aplikasi-nomor-surat-osis.vercel.app'
+const mainUrl = 'http://localhost:3000'
 
 jQuery(function ($) {
   !document.cookie.startsWith('loggedIn=true')
@@ -32,8 +32,23 @@ jQuery(function ($) {
     inputNewData($('#input-new').val().split('\n'))
   )
 
+  $('#link-2').on('keypress', (key) => {
+    if (key.which == 13) inputLink($('#link-2').val())
+  })
+
   $('#password').on('keypress', (key) => {
     if (key.which == 13) login($('#username').val(), $('#password').val())
+  })
+
+  $('#link-edit').on('keypress', (key) => {
+    if (key.which == 13)
+      editLetter(
+        $('#date').val(),
+        $('#pengirim-edit').val(),
+        $('#jenis-surat-edit').val(),
+        $('#perihal-edit').val(),
+        $('#link-edit').val()
+      )
   })
 
   $('#edit').click(() =>
@@ -54,16 +69,33 @@ jQuery(function ($) {
     location.reload()
   })
 
+  $('#search').change(search)
+  $('#searchButton').click(search)
+
   const createLinkDialog = document.getElementById('create-link-dialog')
-  createLinkDialog.addEventListener('hidden.bs.modal', (_) =>
-    clearInput($('#link-2'))
+  createLinkDialog.addEventListener('hidden.bs.modal', _ =>
+    clearInput($('#link-2'), $('#error-link'))
   )
 
   const inputNewDialog = document.getElementById('input-new-dialog')
-  inputNewDialog.addEventListener('hidden.bs.modal', (_) =>
-    clearInput($('#input-new'))
+  inputNewDialog.addEventListener('hidden.bs.modal', _ =>
+    clearInput($('#input-new'), $('#error-link'))
   )
 
+  const createNewDialog = document.getElementById('create-new-dialog')
+  createNewDialog.addEventListener('hidden.bs.modal', _ => {
+    clearInput($('#perihal'), $('#error-perihal'))
+    clearInput($('#link'), $('#error-link'))
+  })
+
+  const editDialog = document.getElementById('edit-dialog')
+  editDialog.addEventListener('hidden.bs.modal', _ => {
+    clearInput($('#date-container > .mt-1'), $('#error-date'))
+    clearInput($('#perihal-edit'), $('#error-edit-perihal'))
+    clearInput($('#edit-link'), $('#error-edit-link'))
+  })
+
+  localStorage.setItem('isSearch', false)
   $.ajax({
     url: `${mainUrl}/nomor-surat`,
     success: showLetterNumber,
@@ -106,6 +138,7 @@ jQuery(function ($) {
   }
 
   function showLetterNumber(data) {
+    if (localStorage.getItem('isSearch')) $('#table-content').empty()
     data[0].payload.forEach((data) => {
       const {
         id,
@@ -133,7 +166,7 @@ jQuery(function ($) {
       )
       $('tbody > tr:last-child').hover(
         () => {
-          // $(`#edit-${id}`).removeAttr('hidden')
+          $(`#edit-${id}`).removeAttr('hidden')
           $(`#delete-${id}`).removeAttr('hidden')
         },
         () => {
@@ -141,6 +174,7 @@ jQuery(function ($) {
           $(`#delete-${id}`).attr('hidden', '')
         }
       )
+      $(`#create-link-${id}`).click(() => localStorage.setItem('id', id))
       $(`#edit-${id}`).click(() => {
         $('#date').val($(`tr:nth-child(${id}) > td:nth-child(2)`).text())
         $(
@@ -153,15 +187,31 @@ jQuery(function ($) {
         $('#perihal-edit').val(
           $(`tr:nth-child(${id}) > td:nth-child(6)`).text()
         )
-        if ($.contains($(`#link-table-${id}`).get(0), $('a').get(0)))
+        if (
+          $.contains(
+            $(`tr:nth-child(${id}) > td:last-child`).get(0),
+            $('a').get(0)
+          )
+        )
           $('#link-edit').val(
             $(`tr:nth-child(${id}) > td:nth-child(7) > a`).attr('href')
           )
+        localStorage.setItem('id', id)
+      })
+      $(`#delete-${id}`).click(() => {
+        localStorage.setItem('id', id)
+        $('#delete-nomor-surat-body').text(
+          $(`tr:nth-child(${id}) > td:nth-child(5)`).text()
+        )
       })
     })
-    if (!data[0].payload.length)
+    if (!data[0].payload.length && !localStorage.getItem('isSearch'))
       $('#empty-table').append(
         `<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-new-dialog">Masukkan Data Yang Sudah Ada</button>`
+      )
+    else if (!data[0].payload.length && localStorage.getItem('isSearch'))
+      $('#empty-table').append(
+        `<p>Data tidak ditemukan`
       )
     else $('#empty-table').empty()
   }
@@ -186,9 +236,9 @@ jQuery(function ($) {
       $('#perihal').css('margin-bottom', '0px')
       valid++
     }
-    if (link.length > 500 || (!link.startsWith('http') && link.length != 0)) {
+    if (link.length > 500 || isLinkBroken(link)) {
       const error = document.createElement('p')
-      error.innerText = !link.startsWith('http')
+      error.innerText = isLinkBroken(link)
         ? 'Masukkan link yang benar.'
         : 'Jumlah maksimal adalah 500 huruf.'
       error.style.color = 'red'
@@ -242,6 +292,38 @@ jQuery(function ($) {
               linkButton(link, id)
             )
           )
+          $('tbody > tr:last-child').hover(
+            () => {
+              $(`#edit-${id}`).removeAttr('hidden')
+              $(`#delete-${id}`).removeAttr('hidden')
+            },
+            () => {
+              $(`#edit-${id}`).attr('hidden', '')
+              $(`#delete-${id}`).attr('hidden', '')
+            }
+          )
+          $(`#edit-${id}`).click(() => {
+            $('#date').val($(`tr:nth-child(${id}) > td:nth-child(2)`).text())
+            $(
+              `#jenis-surat-edit > option:nth-child(${
+                jenisSuratKepanjangan.indexOf(
+                  $(`tr:nth-child(${id}) > td:nth-child(4)`).text()
+                ) + 1
+              })`
+            ).prop('selected', true)
+            $('#perihal-edit').val(
+              $(`tr:nth-child(${id}) > td:nth-child(6)`).text()
+            )
+            if (
+              $.contains(
+                $(`tr:nth-child(${id}) > td:last-child`).get(0),
+                $('a').get(0)
+              )
+            )
+              $('#link-edit').val(
+                $(`tr:nth-child(${id}) > td:nth-child(7) > a`).attr('href')
+              )
+          })
           $('#create-new-dialog').modal('hide')
         })
         .catch((error) => console.log(error))
@@ -251,7 +333,7 @@ jQuery(function ($) {
   function inputLink(link) {
     if (
       link.length > 500 ||
-      (!link.startsWith('http') && link.length != 0) ||
+      isLinkBroken(link) ||
       link == ''
     ) {
       const error = document.createElement('p')
@@ -260,7 +342,7 @@ jQuery(function ($) {
       if ($('#error-link').length) {
         if (link == '') {
           $('#error-link').text('Inputan link kosong.')
-        } else if (!link.startsWith('http')) {
+        } else if (isLinkBroken(link)) {
           $('#error-link').text('Masukkan link yang benar.')
         } else {
           $('#error-link').text('Jumlah maksimal adalah 500 huruf.')
@@ -269,7 +351,7 @@ jQuery(function ($) {
       } else {
         if (link == '') {
           error.innerText = 'Inputan link kosong.'
-        } else if (!link.startsWith('http')) {
+        } else if (isLinkBroken(link)) {
           error.innerText = 'Masukkan link yang benar.'
         } else {
           error.innerText = 'Jumlah maksimal adalah 500 huruf.'
@@ -290,18 +372,46 @@ jQuery(function ($) {
           link,
         }),
       })
-        .then((response) => response.json())
-        .then((response) => {
-          $(`#link-table-${id}`).empty()
-          $(`#link-table-${id}`).append(linkButton(link, id))
+        .then(_ => {
+          $(`tr:nth-child(${id}) > td:last-child`).empty()
+          $(`tr:nth-child(${id}) > td:last-child`).append(linkButton(link, id))
           $('#create-link-dialog').modal('hide')
+          $(`#edit-${id}`).click(() => {
+            $('#date').val($(`tr:nth-child(${id}) > td:nth-child(2)`).text())
+            $(
+              `#jenis-surat-edit > option:nth-child(${
+                jenisSuratKepanjangan.indexOf(
+                  $(`tr:nth-child(${id}) > td:nth-child(4)`).text()
+                ) + 1
+              })`
+            ).prop('selected', true)
+            $('#perihal-edit').val(
+              $(`tr:nth-child(${id}) > td:nth-child(6)`).text()
+            )
+            if (
+              $.contains(
+                $(`tr:nth-child(${id}) > td:last-child`).get(0),
+                $('a').get(0)
+              )
+            )
+              $('#link-edit').val(
+                $(`tr:nth-child(${id}) > td:nth-child(7) > a`).attr('href')
+              )
+            localStorage.setItem('id', id)
+          })
+          $(`#delete-${id}`).click(() => {
+            localStorage.setItem('id', id)
+            $('#delete-nomor-surat-body').text(
+              $(`tr:nth-child(${id}) > td:nth-child(5)`).text()
+            )
+          })
         })
         .catch((error) => console.log(error))
     }
   }
 
-  function clearInput(element) {
-    $('#error-link').remove()
+  function clearInput(element, error) {
+    error.remove()
     element.css('margin-bottom', '0px')
     element.val('')
   }
@@ -390,14 +500,33 @@ jQuery(function ($) {
     }
   }
 
-  function editLetter(date, pengirim, jenis, perihalNullable, linkNullable) {
-    const perihal = perihalNullable || '',
-      link = linkNullable || ''
-    let valid = 0
-    alert(perihal)
-    alert(link)
+  function editLetter(date, pengirim, jenis, perihal, link) {
+    const id = localStorage.getItem('id')
+    let valid = true
+    let dateArray = date.split(' ')
+    dateArray[0] = dateArray[0] == '' ? 0 : parseInt(dateArray[0])
+    if (
+      dateArray.length != 3 ||
+      dateArray[0] > 31 ||
+      dateArray[0] < 0 ||
+      monthName.indexOf(dateArray[1]) == -1 ||
+      dateArray[2].length != 4
+    ) {
+      const error = document.createElement('p')
+      error.innerText = 'Masukkan tanggal dengan benar'
+      error.style.color = 'red'
+      error.id = 'error-date'
+      if ($('#error-date').length) shakeElement($('#error-date'))
+      else {
+        $('#date-container').append(error)
+        $('#date-container > .mt-1').css('margin-bottom', '5px')
+      }
+      valid = false
+    } else {
+      $('#error-date').remove()
+      $('#date-container > .mt-1').css('margin-bottom', '0px')
+    }
     if (perihal.length > 100) {
-      alert(true)
       const error = document.createElement('p')
       error.innerText = 'Jumlah maksimal adalah 100 huruf.'
       error.style.color = 'red'
@@ -405,32 +534,106 @@ jQuery(function ($) {
       if ($('#error-edit-perihal').length)
         shakeElement($('#error-edit-perihal'))
       else {
-        $('#perihal-container').append(error)
+        $('#perihal-edit-container').append(error)
         $('#perihal-edit').css('margin-bottom', '5px')
       }
+      valid = false
     } else {
-      alert(false)
       $('#error-edit-perihal').remove()
       $('#perihal-edit').css('margin-bottom', '0px')
-      valid++
     }
-
-    if (link.length > 500 || (!link.startsWith('http') && link.length != 0)) {
+    if (link.length > 500 || isLinkBroken(link)) {
       const error = document.createElement('p')
-      error.innerText = !link.startsWith('http')
+      error.innerText = isLinkBroken(link)
         ? 'Masukkan link yang benar.'
         : 'Jumlah maksimal adalah 500 huruf.'
       error.style.color = 'red'
       error.id = 'error-edit-link'
       if ($('#error-edit-link').length) shakeElement($('#error-edit-link'))
       else {
-        $('#link-container').append(error)
+        $('#link-edit-container').append(error)
         $('#edit-link').css('margin-bottom', '5px')
       }
+      valid = false
     } else {
       $('#error-edit-link').remove()
       $('#edit-link').css('margin-bottom', '0px')
-      valid++
     }
+    if (valid) {
+      fetch(`${mainUrl}/nomor-surat/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jenis: jenisSurat[jenis - 1],
+          pengirim,
+          perihal,
+          link,
+          tanggal: dateArray[0],
+          bulan: monthName.indexOf(dateArray[1]) + 1,
+          tahun: dateArray[2],
+        }),
+      })
+      $(`tr:nth-child(${id}) > td:nth-child(2)`).text(date)
+      $(`tr:nth-child(${id}) > td:nth-child(3)`).text(pengirim)
+      $(`tr:nth-child(${id}) > td:nth-child(4)`).text(
+        jenisSuratKepanjangan[jenis - 1]
+      )
+      $(`tr:nth-child(${id}) > td:nth-child(6)`).text(perihal)
+      $(`tr:nth-child(${id}) > td:last-child`).empty()
+      $(`tr:nth-child(${id}) > td:last-child`).append(linkButton(link, id))
+      $('#edit-dialog').modal('hide')
+      $(`#edit-${id}`).click(() => {
+        $('#date').val($(`tr:nth-child(${id}) > td:nth-child(2)`).text())
+        $(
+          `#jenis-surat-edit > option:nth-child(${
+            jenisSuratKepanjangan.indexOf(
+              $(`tr:nth-child(${id}) > td:nth-child(4)`).text()
+            ) + 1
+          })`
+        ).prop('selected', true)
+        $('#perihal-edit').val(
+          $(`tr:nth-child(${id}) > td:nth-child(6)`).text()
+        )
+        if (
+          $.contains(
+            $(`tr:nth-child(${id}) > td:last-child`).get(0),
+            $('a').get(0)
+          )
+        )
+          $('#link-edit').val(
+            $(`tr:nth-child(${id}) > td:nth-child(7) > a`).attr('href')
+          )
+        localStorage.setItem('id', id)
+      })
+      $(`#delete-${id}`).click(() => {
+        localStorage.setItem('id', id)
+        $('#delete-nomor-surat-body').text(
+          $(`tr:nth-child(${id}) > td:nth-child(5)`).text()
+        )
+      })
+    }
+  }
+
+  function search() {
+    const search = $('#search').val()
+    if (search.length > 0) {
+      $.ajax({
+        url: `${mainUrl}/nomor-surat?search=${search}`,
+        success: showLetterNumber,
+      })
+      localStorage.setItem('isSearch', true)
+    } else {
+      $.ajax({
+        url: `${mainUrl}/nomor-surat`,
+        success: showLetterNumber,
+      }),
+        localStorage.setItem('isSearch', false)
+    }
+  }
+
+  function isLinkBroken(link) {
+    return !link.startsWith('http') && link.length != 0 && !link.contains('://')
   }
 })
