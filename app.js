@@ -11,9 +11,8 @@ const mainUrl = 'https://aplikasi-nomor-surat-osis.vercel.app'
 // const mainUrl = 'http://localhost:3000'
 
 jQuery(function ($) {
-  !document.cookie.startsWith('loggedIn=true')
-    ? $('#login-dialog').modal('show')
-    : ''
+  if (!Cookies.get('loggedIn')) $('#login-dialog').modal('show')
+  if (Cookies.get('search') != 'undefined') $('#search').val(Cookies.get('search'))
 
   $('#login').click(() => login($('#username').val(), $('#password').val()))
 
@@ -73,40 +72,36 @@ jQuery(function ($) {
   $('#searchButton').click(search)
 
   const createLinkDialog = document.getElementById('create-link-dialog')
-  createLinkDialog.addEventListener('hidden.bs.modal', _ =>
+  createLinkDialog.addEventListener('hidden.bs.modal', (_) =>
     clearInput($('#link-2'), $('#error-link'))
   )
 
   const inputNewDialog = document.getElementById('input-new-dialog')
-  inputNewDialog.addEventListener('hidden.bs.modal', _ =>
+  inputNewDialog.addEventListener('hidden.bs.modal', (_) =>
     clearInput($('#input-new'), $('#error-link'))
   )
 
   const createNewDialog = document.getElementById('create-new-dialog')
-  createNewDialog.addEventListener('hidden.bs.modal', _ => {
+  createNewDialog.addEventListener('hidden.bs.modal', (_) => {
     clearInput($('#perihal'), $('#error-perihal'))
     clearInput($('#link'), $('#error-link'))
   })
 
   const editDialog = document.getElementById('edit-dialog')
-  editDialog.addEventListener('hidden.bs.modal', _ => {
+  editDialog.addEventListener('hidden.bs.modal', (_) => {
     clearInput($('#date-container > .mt-1'), $('#error-date'))
     clearInput($('#perihal-edit'), $('#error-edit-perihal'))
     clearInput($('#edit-link'), $('#error-edit-link'))
   })
 
-  localStorage.setItem('isSearch', false)
-  $.ajax({
-    url: `${mainUrl}/nomor-surat`,
-    success: showLetterNumber,
-  })
+  search()
 
   function login(username, password) {
     if (username == 'osis' && password == 'admin123') {
       const date = new Date()
       date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000)
-      document.cookie = `loggedIn=true; expires=${date.toUTCString()};`
       $('#login-dialog').modal('hide')
+      Cookies.set('loggedIn', 'true', { expires: 30 })
     } else {
       const error = document.createElement('p')
       error.innerText =
@@ -179,30 +174,17 @@ jQuery(function ($) {
         $('#date').val($(`#date-${id}`).text())
         $(
           `#jenis-surat-edit > option:nth-child(${
-            jenisSuratKepanjangan.indexOf(
-              $(`#jenis-${id}`).text()
-            ) + 1
+            jenisSuratKepanjangan.indexOf($(`#jenis-${id}`).text()) + 1
           })`
         ).prop('selected', true)
-        $('#perihal-edit').val(
-          $(`#perihal-${id}`).text()
-        )
-        if (
-          $.contains(
-            $(`#link-${id}`).get(0),
-            $('a').get(0)
-          )
-        )
-          $('#link-edit').val(
-            $(`#link-${id} > a`).attr('href')
-          )
+        $('#perihal-edit').val($(`#perihal-${id}`).text())
+        if ($.contains($(`#link-${id}`).get(0), $('a').get(0)))
+          $('#link-edit').val($(`#link-${id} > a`).attr('href'))
         localStorage.setItem('id', id)
       })
       $(`#delete-${id}`).click(() => {
         localStorage.setItem('id', id)
-        $('#delete-nomor-surat-body').text(
-          $(`#nomor-${id}`).text()
-        )
+        $('#delete-nomor-surat-body').text($(`#nomor-${id}`).text())
       })
     })
     if (!data[0].payload.length && !localStorage.getItem('isSearch'))
@@ -210,9 +192,7 @@ jQuery(function ($) {
         `<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-new-dialog">Masukkan Data Yang Sudah Ada</button>`
       )
     else if (!data[0].payload.length && localStorage.getItem('isSearch'))
-      $('#empty-table').append(
-        `<p>Data tidak ditemukan`
-      )
+      $('#empty-table').append(`<p>Data tidak ditemukan`)
     else $('#empty-table').empty()
   }
 
@@ -331,11 +311,7 @@ jQuery(function ($) {
   }
 
   function inputLink(link) {
-    if (
-      link.length > 500 ||
-      isLinkBroken(link) ||
-      link == ''
-    ) {
+    if (link.length > 500 || isLinkBroken(link) || link == '') {
       const error = document.createElement('p')
       error.style.color = 'red'
       error.id = 'error-link'
@@ -372,7 +348,7 @@ jQuery(function ($) {
           link,
         }),
       })
-        .then(_ => {
+        .then((_) => {
           $(`tr:nth-child(${id}) > td:last-child`).empty()
           $(`tr:nth-child(${id}) > td:last-child`).append(linkButton(link, id))
           $('#create-link-dialog').modal('hide')
@@ -624,6 +600,7 @@ jQuery(function ($) {
         success: showLetterNumber,
       })
       localStorage.setItem('isSearch', true)
+      Cookies.set('search', search, { expires: 1 })
     } else {
       $.ajax({
         url: `${mainUrl}/nomor-surat`,
