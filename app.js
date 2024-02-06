@@ -7,8 +7,8 @@ import jenisSurat from './data/jenis-surat.js'
 import toDecimal from './data/to-decimal.js'
 import jenisSuratKepanjangan from './data/jenis-surat-kepanjangan.js'
 
-// const mainUrl = 'https://aplikasi-nomor-surat-osis.vercel.app'
-const mainUrl = 'http://localhost:3000'
+const mainUrl = 'https://aplikasi-nomor-surat-osis.vercel.app'
+// const mainUrl = 'http://localhost:3000'
 
 jQuery(function ($) {
   !document.cookie.startsWith('loggedIn=true')
