@@ -12,7 +12,8 @@ const mainUrl = 'https://aplikasi-nomor-surat-osis.vercel.app'
 
 jQuery(function ($) {
   if (!Cookies.get('loggedIn')) $('#login-dialog').modal('show')
-  if (Cookies.get('search') != 'undefined') $('#search').val(Cookies.get('search'))
+  if (Cookies.get('search') != 'undefined' || Cookies.get('search') != '')
+      $('#search').val(Cookies.get('search'))
 
   $('#login').click(() => login($('#username').val(), $('#password').val()))
 
@@ -133,7 +134,7 @@ jQuery(function ($) {
   }
 
   function showLetterNumber(data) {
-    if (localStorage.getItem('isSearch')) $('#table-content').empty()
+    if (Cookies.get('search') !== '') $('#table-content').empty()
     data[0].payload.forEach((data) => {
       const {
         id,
@@ -145,7 +146,7 @@ jQuery(function ($) {
         perihal,
         link,
       } = data
-      const finalDate = `${tanggal == 0 ? '' : tanggal} ${
+      const finalDate = `${tanggal === 0 ? '' : tanggal} ${
         monthName[bulan - 1]
       } ${tahun}`
       $('#table-content').append(
@@ -170,28 +171,17 @@ jQuery(function ($) {
         }
       )
       $(`#create-link-${id}`).click(() => localStorage.setItem('id', id))
-      $(`#edit-${id}`).click(() => {
-        $('#date').val($(`#date-${id}`).text())
-        $(
-          `#jenis-surat-edit > option:nth-child(${
-            jenisSuratKepanjangan.indexOf($(`#jenis-${id}`).text()) + 1
-          })`
-        ).prop('selected', true)
-        $('#perihal-edit').val($(`#perihal-${id}`).text())
-        if ($.contains($(`#link-${id}`).get(0), $('a').get(0)))
-          $('#link-edit').val($(`#link-${id} > a`).attr('href'))
-        localStorage.setItem('id', id)
-      })
+      $(`#edit-${id}`).click(() => edit())
       $(`#delete-${id}`).click(() => {
         localStorage.setItem('id', id)
         $('#delete-nomor-surat-body').text($(`#nomor-${id}`).text())
       })
     })
-    if (!data[0].payload.length && !localStorage.getItem('isSearch'))
+    if (!data[0].payload.length && Cookies.get('search') === '')
       $('#empty-table').append(
         `<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#input-new-dialog">Masukkan Data Yang Sudah Ada</button>`
       )
-    else if (!data[0].payload.length && localStorage.getItem('isSearch'))
+    else if (!data[0].payload.length && Cookies.get('search') !== '')
       $('#empty-table').append(`<p>Data tidak ditemukan`)
     else $('#empty-table').empty()
   }
@@ -282,28 +272,7 @@ jQuery(function ($) {
               $(`#delete-${id}`).attr('hidden', '')
             }
           )
-          $(`#edit-${id}`).click(() => {
-            $('#date').val($(`tr:nth-child(${id}) > td:nth-child(2)`).text())
-            $(
-              `#jenis-surat-edit > option:nth-child(${
-                jenisSuratKepanjangan.indexOf(
-                  $(`tr:nth-child(${id}) > td:nth-child(4)`).text()
-                ) + 1
-              })`
-            ).prop('selected', true)
-            $('#perihal-edit').val(
-              $(`tr:nth-child(${id}) > td:nth-child(6)`).text()
-            )
-            if (
-              $.contains(
-                $(`tr:nth-child(${id}) > td:last-child`).get(0),
-                $('a').get(0)
-              )
-            )
-              $('#link-edit').val(
-                $(`tr:nth-child(${id}) > td:nth-child(7) > a`).attr('href')
-              )
-          })
+          $(`#edit-${id}`).click(() => edit())
           $('#create-new-dialog').modal('hide')
         })
         .catch((error) => console.log(error))
@@ -352,29 +321,7 @@ jQuery(function ($) {
           $(`tr:nth-child(${id}) > td:last-child`).empty()
           $(`tr:nth-child(${id}) > td:last-child`).append(linkButton(link, id))
           $('#create-link-dialog').modal('hide')
-          $(`#edit-${id}`).click(() => {
-            $('#date').val($(`tr:nth-child(${id}) > td:nth-child(2)`).text())
-            $(
-              `#jenis-surat-edit > option:nth-child(${
-                jenisSuratKepanjangan.indexOf(
-                  $(`tr:nth-child(${id}) > td:nth-child(4)`).text()
-                ) + 1
-              })`
-            ).prop('selected', true)
-            $('#perihal-edit').val(
-              $(`tr:nth-child(${id}) > td:nth-child(6)`).text()
-            )
-            if (
-              $.contains(
-                $(`tr:nth-child(${id}) > td:last-child`).get(0),
-                $('a').get(0)
-              )
-            )
-              $('#link-edit').val(
-                $(`tr:nth-child(${id}) > td:nth-child(7) > a`).attr('href')
-              )
-            localStorage.setItem('id', id)
-          })
+          $(`#edit-${id}`).click(() => edit())
           $(`#delete-${id}`).click(() => {
             localStorage.setItem('id', id)
             $('#delete-nomor-surat-body').text(
@@ -560,29 +507,7 @@ jQuery(function ($) {
       $(`tr:nth-child(${id}) > td:last-child`).empty()
       $(`tr:nth-child(${id}) > td:last-child`).append(linkButton(link, id))
       $('#edit-dialog').modal('hide')
-      $(`#edit-${id}`).click(() => {
-        $('#date').val($(`tr:nth-child(${id}) > td:nth-child(2)`).text())
-        $(
-          `#jenis-surat-edit > option:nth-child(${
-            jenisSuratKepanjangan.indexOf(
-              $(`tr:nth-child(${id}) > td:nth-child(4)`).text()
-            ) + 1
-          })`
-        ).prop('selected', true)
-        $('#perihal-edit').val(
-          $(`tr:nth-child(${id}) > td:nth-child(6)`).text()
-        )
-        if (
-          $.contains(
-            $(`tr:nth-child(${id}) > td:last-child`).get(0),
-            $('a').get(0)
-          )
-        )
-          $('#link-edit').val(
-            $(`tr:nth-child(${id}) > td:nth-child(7) > a`).attr('href')
-          )
-        localStorage.setItem('id', id)
-      })
+      $(`#edit-${id}`).click(() => edit())
       $(`#delete-${id}`).click(() => {
         localStorage.setItem('id', id)
         $('#delete-nomor-surat-body').text(
@@ -599,18 +524,41 @@ jQuery(function ($) {
         url: `${mainUrl}/nomor-surat?search=${search}`,
         success: showLetterNumber,
       })
-      localStorage.setItem('isSearch', true)
       Cookies.set('search', search, { expires: 1 })
     } else {
       $.ajax({
         url: `${mainUrl}/nomor-surat`,
         success: showLetterNumber,
-      }),
-        localStorage.setItem('isSearch', false)
+      })
+      Cookies.set('search', '')
     }
   }
 
   function isLinkBroken(link) {
     return !link.startsWith('http') && link.length != 0 && !link.contains('://')
+  }
+  
+  function edit() {
+    $('#date').val($(`tr:nth-child(${id}) > td:nth-child(2)`).text())
+    $(
+        `#jenis-surat-edit > option:nth-child(${
+            jenisSuratKepanjangan.indexOf(
+                $(`tr:nth-child(${id}) > td:nth-child(4)`).text()
+            ) + 1
+        })`
+    ).prop('selected', true)
+    $('#perihal-edit').val(
+        $(`tr:nth-child(${id}) > td:nth-child(6)`).text()
+    )
+    if (
+        $.contains(
+            $(`tr:nth-child(${id}) > td:last-child`).get(0),
+            $('a').get(0)
+        )
+    )
+      $('#link-edit').val(
+          $(`tr:nth-child(${id}) > td:nth-child(7) > a`).attr('href')
+      )
+    localStorage.setItem('id', id)
   }
 })
