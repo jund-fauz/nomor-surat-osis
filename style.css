@@ -1,4 +1,4 @@
-body:has(table:has(tbody:not(:has(div)))) {
+tbody:empty {
     cursor: progress;
 }
 
