@@ -1,3 +1,7 @@
+body:has(table > tbody:not(:has(div))) {
+    cursor: progress;
+}
+
 .wfc {
     width: fit-content;
 }
