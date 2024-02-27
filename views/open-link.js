@@ -7,8 +7,8 @@ const linkButton = (link, id) =>
   <button type="button" class="btn btn-primary ms-1" id="edit-${id}" hidden data-bs-toggle="modal" data-bs-target="#edit-dialog">
     <i class="fa-solid fa-pencil"></i>
   </button>
-  <button type="button" class="btn btn-danger ms-1" id="delete-${id}" hidden data-bs-toggle="modal" data-bs-target="#delete-dialog">
+  <-- <button type="button" class="btn btn-danger ms-1" id="delete-${id}" hidden data-bs-toggle="modal" data-bs-target="#delete-dialog">
     <i class="fa-solid fa-trash"></i>
-  </button>`
+  </button> ->`
 
 export default linkButton;
