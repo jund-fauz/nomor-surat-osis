@@ -1,4 +1,4 @@
-body:has(table > tbody:not(:has(div))) {
+body:has(table:has(tbody:not(:has(div)))) {
     cursor: progress;
 }
 
